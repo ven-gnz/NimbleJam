@@ -4,8 +4,10 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
 
-    [SerializeField] private float moveSpeed = 2.5f;
+    [SerializeField] private float moveSpeed = 5f;
     private Rigidbody2D rb;
+
+    [SerializeField] float jumpImpulse = 1.5f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     private void Awake()
@@ -22,11 +24,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-    }
-
-    private void FixedUpdate()
-    {
         float input = 0f;
 
         if (Keyboard.current.aKey.isPressed)
@@ -39,5 +36,16 @@ public class PlayerController : MonoBehaviour
             input * moveSpeed,
             rb.linearVelocity.y
         );
+
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            Debug.Log("Jump!");
+            rb.AddForce(Vector2.up * jumpImpulse, ForceMode2D.Impulse);
+        }
+    }
+
+    private void FixedUpdate()
+    {
+
     }
 }

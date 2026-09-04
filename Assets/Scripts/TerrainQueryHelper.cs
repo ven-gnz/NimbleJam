@@ -154,15 +154,15 @@ public class TerrainQueryHelper : MonoBehaviour
 
         terrainColliders.Add(cell, obj);
 
-        // Debug visualization
-        SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
-        renderer.sprite = tilemap.GetSprite(cell);
-        renderer.color = new Color(1f, 0f, 0f, 0.25f);
+        //// Debug visualization
+        //SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
+        //renderer.sprite = tilemap.GetSprite(cell);
+        //renderer.color = new Color(1f, 0f, 0f, 0.25f);
 
-        Debug.Log($"cellSize = {tilemap.cellSize}");
-        Debug.Log($"localScale = {tilemap.transform.localScale}");
-        Debug.Log($"lossyScale = {tilemap.transform.lossyScale}");
-        Debug.Log($"cellGap = {tilemap.cellGap}");
+        //Debug.Log($"cellSize = {tilemap.cellSize}");
+        //Debug.Log($"localScale = {tilemap.transform.localScale}");
+        //Debug.Log($"lossyScale = {tilemap.transform.lossyScale}");
+        //Debug.Log($"cellGap = {tilemap.cellGap}");
     }
 
     void OnDrawGizmos()
