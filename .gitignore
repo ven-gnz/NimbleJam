@@ -1,0 +1,59 @@
+# ===== Unity generated folders (never commit) =====
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+
+# ===== Asset store tools & local packages cache =====
+[Aa]ssets/AssetStoreTools*
+[Aa]ssets/Plugins/Editor/JetBrains*
+
+# ===== IDE & editor files =====
+.vs/
+.idea/
+.vscode/
+.consulo/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# ===== OS junk files =====
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ===== Unity crash reports & profiler =====
+sysinfo.txt
+*.stackdump
+crashlytics-build.properties
+
+# ===== Builds & packages =====
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# ===== Addressables & Gradle (safe to regenerate) =====
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+/[Aa]ssets/[Ss]treamingAssets/aa.meta
+/[Aa]ssets/[Ss]treamingAssets/aa/*
+.gradle/
+
+Out/*
+Out.zip
