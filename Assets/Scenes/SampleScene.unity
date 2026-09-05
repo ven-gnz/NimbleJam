@@ -7179,10 +7179,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   moveSpeed: 2.5
-  playerCollider: {fileID: 0}
+  playerCollider: {fileID: 2091256860}
+  coyoteTime: 0.2
   jumpImpulse: 5
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
   terrain: {fileID: 0}
-  maxDirt: 3
+  isDigging: 0
 --- !u!50 &2091256863
 Rigidbody2D:
   serializedVersion: 5

@@ -32,15 +32,25 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     [SerializeField] Collider2D playerCollider;
 
-    [SerializeField] float jumpImpulse = 5f;
+    [SerializeField] float coyoteTime = 0.4f;
+
+    [SerializeField] float jumpImpulse = 10f;
+    [SerializeField] private LayerMask groundLayer;
+    private int groundContacts;
+    private bool IsGrounded => groundContacts > 0;
+
+    private bool touchingLeftWall;
+    private bool touchingRightWall;
 
     [SerializeField] private TerrainQueryHelper terrain;
-    [SerializeField] private int maxDirt = 64;
     private int carriedDirt = 0;
     public int CarriedDirt => carriedDirt;
 
     public bool isDigging;
-    public bool isJumping;
+    private float coyoteTimer;
+    private bool isGrounded;
+    private bool canJump;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -74,19 +84,19 @@ public class PlayerController : MonoBehaviour
                 return;
             }
 
-            if (keyboard.sKey.isPressed && keyboard.aKey.isPressed)
+            else if (keyboard.sKey.isPressed && keyboard.aKey.isPressed)
             {
                 TryDig(DigDirections.DownLeft);
                 return;
             }
 
-            if (keyboard.wKey.isPressed && keyboard.aKey.isPressed)
+            else if (keyboard.wKey.isPressed && keyboard.aKey.isPressed)
             {
                 TryDig(DigDirections.Topleft);
                 return;
             }
 
-            if (keyboard.wKey.isPressed && keyboard.dKey.isPressed)
+            else if (keyboard.wKey.isPressed && keyboard.dKey.isPressed)
             {
                 TryDig(DigDirections.TopRight);
                 return;
@@ -117,10 +127,6 @@ public class PlayerController : MonoBehaviour
 
             return;
         }
-
-
-
-
 
         // p for placing dirt
         if(Keyboard.current.pKey.isPressed)
@@ -164,16 +170,100 @@ public class PlayerController : MonoBehaviour
         if (Keyboard.current.dKey.isPressed)
             input += 1f;
 
+        if (touchingLeftWall && input < 0f)
+            input = 0f;
+
+        if (touchingRightWall && input > 0f)
+            input = 0f;
 
         rb.linearVelocity = new Vector2(
             input * moveSpeed,
             rb.linearVelocity.y
         );
 
-        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        if (isGrounded)
         {
-            rb.AddForce(Vector2.up * jumpImpulse, ForceMode2D.Impulse);
+            coyoteTimer = coyoteTime;
         }
+        else
+        {
+            coyoteTimer -= Time.deltaTime;
+        }
+
+        if (Keyboard.current.spaceKey.wasPressedThisFrame 
+            && coyoteTimer > 0f)
+        {
+            
+            if (coyoteTimer > 0f)
+            {
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+                rb.AddForce(Vector2.up * jumpImpulse, ForceMode2D.Impulse);
+                coyoteTimer = 0f;
+            }
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+
+        Debug.Log($"Collision with: {collision.gameObject.name}");
+
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            Debug.Log($"Normal: {contact.normal}");
+        }
+
+        //if ((groundLayer.value & (1 << collision.gameObject.layer)) == 0)
+        //    return;
+
+        //foreach (ContactPoint2D contact in collision.contacts)
+        //{
+        //    if (contact.normal.y > 0.5f)
+        //    {
+        //        groundContacts++;
+        //        return;
+        //    }
+        //}
+    }
+
+
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            // Normal points away from the surface.
+            // A ground surface has an upward normal.
+            if (contact.normal.y > 0.5f)
+            {
+                isGrounded = true;
+               
+            }
+            if (contact.normal.x > 0.5f)
+                touchingLeftWall = true;
+
+            if (contact.normal.x < -0.5f)
+                touchingRightWall = true;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        //if ((groundLayer.value & (1 << collision.gameObject.layer)) == 0)
+        //    return;
+
+        //foreach (ContactPoint2D contact in collision.contacts)
+        //{
+        //    if (contact.normal.y > 0.5f)
+        //    {
+        //        groundContacts = Mathf.Max(0, groundContacts - 1);
+        //        return;
+        //    }
+        //}
+
+        isGrounded = false;
+        touchingLeftWall = false;
+        touchingRightWall = false;
     }
 
     private void TryDig(DigDirections direction)
