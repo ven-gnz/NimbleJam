@@ -32,16 +32,18 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     [SerializeField] Collider2D playerCollider;
 
-    [SerializeField] float coyoteTime = 0.4f;
+    [SerializeField] float coyoteTime = 0.2f;
 
     [SerializeField] float jumpImpulse = 10f;
     [SerializeField] private LayerMask groundLayer;
-    private int groundContacts;
-    private bool IsGrounded => groundContacts > 0;
     [SerializeField] public PlayerUI playerUI;
 
-    [SerializeField] float jumpBufferTime = 1.0f;
+    [SerializeField] float jumpBufferTime = 0.1f;
 
+    private float jumpCooldown = 0.33f;
+    private float jumpCooldownTimer;
+
+    private bool jumpAvailable;
     private float jumpBufferTimer;
 
     private bool touchingLeftWall;
@@ -74,7 +76,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
 
-       
+        jumpCooldownTimer -= Time.deltaTime;
         // o for digging
         if (Keyboard.current.oKey.wasPressedThisFrame)
         {
@@ -202,11 +204,14 @@ public class PlayerController : MonoBehaviour
             jumpBufferTimer -= Time.deltaTime;
 
 
-        if (jumpBufferTimer > 0f &&
-            coyoteTimer > 0f)
+        if (
+            jumpBufferTimer > 0f &&
+            coyoteTimer > 0f &&
+            jumpCooldownTimer <= 0f)
+
         {
             Jump();
-
+            jumpCooldownTimer = jumpCooldown;
             jumpBufferTimer = 0f;
             coyoteTimer = 0f;
         }
