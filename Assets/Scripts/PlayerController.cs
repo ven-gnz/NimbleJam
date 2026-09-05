@@ -133,7 +133,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // p for placing dirt
-        if(Keyboard.current.pKey.isPressed)
+        if(Keyboard.current.pKey.wasPressedThisFrame)
         {
 
             if(Keyboard.current.aKey.isPressed && Keyboard.current.sKey.isPressed)
@@ -148,17 +148,17 @@ public class PlayerController : MonoBehaviour
                 return;
             }
 
-            else if (Keyboard.current.aKey.wasPressedThisFrame)
+            else if (Keyboard.current.aKey.isPressed)
             {
                 TryPlaceBlock(PlacementDirections.Left);
                 return;
             }
-            else if (Keyboard.current.dKey.wasPressedThisFrame)
+            else if (Keyboard.current.dKey.isPressed)
             {
                 TryPlaceBlock(PlacementDirections.Right);
                 return;
             }
-            else if (Keyboard.current.sKey.wasPressedThisFrame)
+            else if (Keyboard.current.sKey.isPressed)
             {
                 TryPlaceBlock(PlacementDirections.Down);
                 return;
@@ -219,11 +219,11 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
 
-        Debug.Log($"Collision with: {collision.gameObject.name}");
+        //Debug.Log($"Collision with: {collision.gameObject.name}");
 
         foreach (ContactPoint2D contact in collision.contacts)
         {
-            Debug.Log($"Normal: {contact.normal}");
+            //Debug.Log($"Normal: {contact.normal}");
         }
 
         //if ((groundLayer.value & (1 << collision.gameObject.layer)) == 0)
@@ -245,8 +245,7 @@ public class PlayerController : MonoBehaviour
     {
         foreach (ContactPoint2D contact in collision.contacts)
         {
-            // Normal points away from the surface.
-            // A ground surface has an upward normal.
+            
             if (contact.normal.y > 0.5f)
             {
                 isGrounded = true;
@@ -281,7 +280,7 @@ public class PlayerController : MonoBehaviour
 
     private void TryDig(DigDirections direction)
     {
-        Debug.Log("starting to dig! " + isDigging);
+        //Debug.Log("starting to dig! " + isDigging);
         isDigging = true;
         
         Vector3Int targetCell = GetDigCell(direction);
@@ -308,7 +307,7 @@ public class PlayerController : MonoBehaviour
 
         StartCoroutine(HandleDigDelay());
         
-        Debug.Log("End dig routine " + isDigging);
+        //Debug.Log("End dig routine " + isDigging);
     }
 
 
