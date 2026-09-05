@@ -39,6 +39,10 @@ public class PlayerController : MonoBehaviour
     private int groundContacts;
     private bool IsGrounded => groundContacts > 0;
 
+    [SerializeField] float jumpBufferTime = 1.0f;
+
+    private float jumpBufferTimer;
+
     private bool touchingLeftWall;
     private bool touchingRightWall;
 
@@ -190,17 +194,26 @@ public class PlayerController : MonoBehaviour
             coyoteTimer -= Time.deltaTime;
         }
 
-        if (Keyboard.current.spaceKey.wasPressedThisFrame 
-            && coyoteTimer > 0f)
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+            jumpBufferTimer = jumpBufferTime;
+        else
+            jumpBufferTimer -= Time.deltaTime;
+
+
+        if (jumpBufferTimer > 0f &&
+            coyoteTimer > 0f)
         {
-            
-            if (coyoteTimer > 0f)
-            {
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
-                rb.AddForce(Vector2.up * jumpImpulse, ForceMode2D.Impulse);
-                coyoteTimer = 0f;
-            }
+            Jump();
+
+            jumpBufferTimer = 0f;
+            coyoteTimer = 0f;
         }
+    }
+
+    private void Jump()
+    {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+        rb.AddForce(Vector2.up * jumpImpulse, ForceMode2D.Impulse);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
