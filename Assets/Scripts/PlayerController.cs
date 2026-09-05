@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     private int groundContacts;
     private bool IsGrounded => groundContacts > 0;
+    [SerializeField] public PlayerUI playerUI;
 
     [SerializeField] float jumpBufferTime = 1.0f;
 
@@ -60,6 +61,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         terrain = FindAnyObjectByType<TerrainQueryHelper>();
         playerCollider = GetComponent<Collider2D>();
+        playerUI = GetComponent<PlayerUI>();
     }
 
 
@@ -298,6 +300,7 @@ public class PlayerController : MonoBehaviour
         if(terrainType == TerrainType.Dirt)
         {
             carriedDirt++;
+            playerUI.UpdateDirtCount(carriedDirt);
         }
         
         //Debug.Log(
@@ -383,7 +386,14 @@ public class PlayerController : MonoBehaviour
         {
             success = terrain.RequestTerrain(targetCell);
         }
-        if (success) --carriedDirt;
+
+        if (success)
+        {
+            --carriedDirt;
+            playerUI.UpdateDirtCount(carriedDirt);
+        }
+        
+
 
     }
     
