@@ -7,7 +7,8 @@ public enum TerrainType : byte
 {
     Empty = 0,
     Rock = 1,
-    Soft = 2
+    Dirt = 2,
+    Gravel = 3
 }
 
 [System.Serializable]
@@ -31,7 +32,14 @@ public class TerrainQueryHelper : MonoBehaviour
 
     public Vector3Int WorldToCell(Vector3 worldPosition)
     {
-        return tilemap.WorldToCell(worldPosition);
+
+        Vector3Int GridCoordinate =
+            new Vector3Int(
+                Mathf.RoundToInt(worldPosition.x),
+                Mathf.RoundToInt(worldPosition.y),
+                Mathf.RoundToInt(worldPosition.z));
+
+        return tilemap.WorldToCell(GridCoordinate);
     }
 
 
@@ -182,7 +190,7 @@ public class TerrainQueryHelper : MonoBehaviour
     {
         TerrainType terrain = GetTerrain(cell);
 
-        if (terrain != TerrainType.Soft) return false;
+        if (terrain == TerrainType.Empty || terrain == TerrainType.Rock) return false;
 
         int x = cell.x - bounds.xMin;
         int y = cell.y - bounds.yMin;
@@ -208,7 +216,7 @@ public class TerrainQueryHelper : MonoBehaviour
        foreach(Vector2Int v in CardinalDirections)
         {
             t = new Vector3Int(v.x + cell.x, v.y + cell.y, cell.z);
-            if (GetTerrain(t) == TerrainType.Soft || GetTerrain(t) == TerrainType.Rock)
+            if (GetTerrain(t) == TerrainType.Dirt || GetTerrain(t) == TerrainType.Rock)
             {
                 return true;
             }
@@ -231,7 +239,7 @@ public class TerrainQueryHelper : MonoBehaviour
             int x = cell.x - bounds.xMin;
             int y = cell.y - bounds.yMin;
 
-            terrainData[y * width + x] = (byte)TerrainType.Soft;
+            terrainData[y * width + x] = (byte)TerrainType.Dirt;
             CreateTerrainCollider(cell);
             return true;
         }

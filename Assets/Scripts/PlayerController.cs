@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 
-public enum InteractionDirection
+public enum PlacementDirections
 {
     Left,
     Right,
@@ -10,6 +11,19 @@ public enum InteractionDirection
     DownLeft,
     Downright
 }
+
+public enum DigDirections
+{
+    Topleft,
+    Top,
+    TopRight,
+    Left,
+    Right,
+    DownLeft,
+    Down,
+    DownRight
+}
+
 
 public class PlayerController : MonoBehaviour
 {
@@ -24,8 +38,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int maxDirt = 64;
     private int carriedDirt = 0;
     public int CarriedDirt => carriedDirt;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
 
+    public bool isDigging;
+    public bool isJumping;
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -36,7 +51,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        
+        isDigging = false;
     }
 
     // Update is called once per frame
@@ -47,45 +62,100 @@ public class PlayerController : MonoBehaviour
         // o for digging
         if (Keyboard.current.oKey.isPressed)
         {
-            if (Keyboard.current.aKey.wasPressedThisFrame)
+            if (isDigging) return;
+
+
+            var keyboard = Keyboard.current;
+
+            // Diagonals
+            if (keyboard.sKey.wasPressedThisFrame && keyboard.aKey.isPressed ||
+                keyboard.aKey.wasPressedThisFrame && keyboard.sKey.isPressed)
             {
-                TryDig(InteractionDirection.Left);
+                TryDig(DigDirections.DownLeft);
+                return;
             }
-            else if (Keyboard.current.dKey.wasPressedThisFrame)
+
+            if (keyboard.sKey.wasPressedThisFrame && keyboard.dKey.isPressed ||
+                keyboard.dKey.wasPressedThisFrame && keyboard.sKey.isPressed)
             {
-                TryDig(InteractionDirection.Right);
+                TryDig(DigDirections.DownRight);
+                return;
             }
-            else if (Keyboard.current.sKey.wasPressedThisFrame)
+
+            if (keyboard.wKey.wasPressedThisFrame && keyboard.aKey.isPressed ||
+                keyboard.aKey.wasPressedThisFrame && keyboard.wKey.isPressed)
             {
-                TryDig(InteractionDirection.Down);
+                TryDig(DigDirections.Topleft);
+                return;
             }
+
+            if (keyboard.wKey.wasPressedThisFrame && keyboard.dKey.isPressed ||
+                keyboard.dKey.wasPressedThisFrame && keyboard.wKey.isPressed)
+            {
+                TryDig(DigDirections.TopRight);
+                return;
+            }
+
+
+            else if (Keyboard.current.wKey.isPressed)
+            {
+                TryDig(DigDirections.Top);
+                return;
+            }
+
+            else if (Keyboard.current.aKey.isPressed)
+            {
+                TryDig(DigDirections.Left);
+                return;
+            }
+            else if (Keyboard.current.dKey.isPressed)
+            {
+                TryDig(DigDirections.Right);
+                return;
+            }
+            else if (Keyboard.current.sKey.isPressed)
+            {
+                TryDig(DigDirections.Down);
+                return;
+            }
+
             return;
         }
+
+
+
+
+
         // p for placing dirt
         if(Keyboard.current.pKey.isPressed)
         {
 
-            if(Keyboard.current.aKey.wasPressedThisFrame && Keyboard.current.sKey.wasPressedThisFrame)
+            if(Keyboard.current.aKey.isPressed && Keyboard.current.sKey.isPressed)
             {
-                TryPlaceBlock(InteractionDirection.Downright);
+                TryPlaceBlock(PlacementDirections.DownLeft);
+                return;
             }
 
-            else if (Keyboard.current.dKey.wasPressedThisFrame && Keyboard.current.sKey.wasPressedThisFrame)
+            else if (Keyboard.current.dKey.isPressed && Keyboard.current.sKey.isPressed)
             {
-                TryPlaceBlock(InteractionDirection.DownLeft);
+                TryPlaceBlock(PlacementDirections.Downright);
+                return;
             }
 
             else if (Keyboard.current.aKey.wasPressedThisFrame)
             {
-                TryPlaceBlock(InteractionDirection.Left);
+                TryPlaceBlock(PlacementDirections.Left);
+                return;
             }
             else if (Keyboard.current.dKey.wasPressedThisFrame)
             {
-                TryPlaceBlock(InteractionDirection.Right);
+                TryPlaceBlock(PlacementDirections.Right);
+                return;
             }
             else if (Keyboard.current.sKey.wasPressedThisFrame)
             {
-                TryPlaceBlock(InteractionDirection.Down);
+                TryPlaceBlock(PlacementDirections.Down);
+                return;
             }
             return;
         }
@@ -110,99 +180,153 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void TryDig(InteractionDirection direction)
+    private void TryDig(DigDirections direction)
     {
-        
+        Debug.Log("starting to dig! " + isDigging);
+        isDigging = true;
         
         Vector3Int targetCell = GetDigCell(direction);
         TerrainType terrainType =
             terrain.GetTerrain(targetCell);
 
-        if (terrainType != TerrainType.Soft)
+        if (terrainType == TerrainType.Empty || terrainType == TerrainType.Rock)
         {
             //Debug.Log("Dig failed.");
+            isDigging = false;
             return;
         }
 
         bool success = terrain.RemoveTerrain(targetCell);
-        carriedDirt++;
+        if(terrainType == TerrainType.Dirt)
+        {
+            carriedDirt++;
+        }
+        
         //Debug.Log(
         //    success
         //        ? "Dig successful!"
         //        : "Dig failed.");
 
+        StartCoroutine(HandleDigDelay());
+        
+        Debug.Log("End dig routine " + isDigging);
     }
 
 
-
-    private Vector3Int GetDigCell(InteractionDirection direction)
+    // 0.5f is a sort of magic offset, since the player collider is not exactly the size of one tile.
+    // also there are some bugs in here when going directly down, or at least it assumes too strict of a landing on exactly
+    // on the center
+    private Vector3Int GetDigCell(DigDirections direction)
     {
 
-        Vector3 feetPosition;
+        Vector3 position;
         Vector3Int playerCell;
 
         switch (direction)
         {
-            case InteractionDirection.Left:
-                feetPosition = transform.position + Vector3.down * -0.5f;
-                playerCell = terrain.WorldToCell(feetPosition);
+   
+
+            case DigDirections.Topleft:
+                position = transform.position + Vector3.up * 0.5f;
+                playerCell = terrain.WorldToCell(position);
+                return playerCell + Vector3Int.up + Vector3Int.left;
+
+            case DigDirections.TopRight:
+                position = transform.position + Vector3.up * 0.5f;
+                playerCell = terrain.WorldToCell(position);
+                return playerCell + Vector3Int.up + Vector3Int.right;
+
+            case DigDirections.DownLeft:
+                position = transform.position + Vector3.down * 0.5f;
+                playerCell = terrain.WorldToCell(position);
                 return playerCell + Vector3Int.left;
 
-            case InteractionDirection.Right:
-                feetPosition = transform.position + Vector3.down * -0.5f;
-                playerCell =
-            terrain.WorldToCell(feetPosition);
+            case DigDirections.DownRight:
+                position = transform.position + Vector3.down * 0.5f;
+                playerCell = terrain.WorldToCell(position);
                 return playerCell + Vector3Int.right;
 
-            case InteractionDirection.Down:
-                feetPosition = transform.position + Vector3.down * 0.5f;
-                playerCell = terrain.WorldToCell(feetPosition);
+
+            case DigDirections.Top:
+                position = transform.position + Vector3.up * 0.5f;
+                playerCell = terrain.WorldToCell(position);
+                return playerCell + Vector3Int.up;
+
+
+            case DigDirections.Left:
+                position = transform.position + Vector3.up * 0.5f;
+                playerCell = terrain.WorldToCell(position);
+                return playerCell + Vector3Int.left;
+
+            case DigDirections.Right:
+                position = transform.position + Vector3.up * 0.5f;
+                playerCell =
+                    terrain.WorldToCell(position);
+                return playerCell + Vector3Int.right;
+
+ 
+
+            case DigDirections.Down:
+                position = transform.position + Vector3.down * 0.5f;
+                playerCell = terrain.WorldToCell(position);
                 return playerCell;
         }
 
         return new Vector3Int(0,0,0);
     }
 
-    private void TryPlaceBlock(InteractionDirection direction)
+    private void TryPlaceBlock(PlacementDirections direction)
     {
         // check whether the tile neighbors existing terrain
         
         Vector3Int targetCell = GetTargetCell(direction);
+        bool success = false;
         if(carriedDirt > 0)
         {
-            bool success = terrain.RequestTerrain(targetCell);
+            success = terrain.RequestTerrain(targetCell);
         }
-       
-       
+        if (success) --carriedDirt;
+
+    }
+    
+    private IEnumerator HandleDigDelay()
+    {
+        yield return new WaitForSeconds(1f);
+        isDigging = false;
     }
 
-    private Vector3Int GetTargetCell(InteractionDirection direction)
+    private Vector3Int GetTargetCell(PlacementDirections direction)
     {
         Vector3 position;
         Vector3Int playerCell;
 
         switch (direction)
         {
-            case InteractionDirection.DownLeft:
-                //try, if the 
+            case PlacementDirections.DownLeft:
+               
                 position = transform.position + Vector3.down * 0.5f;
                 playerCell = terrain.WorldToCell(position);
                 return playerCell + Vector3Int.left;
-            case InteractionDirection.Downright:
+
+            case PlacementDirections.Downright:
                 position = transform.position + Vector3.down * 0.5f;
                 playerCell = terrain.WorldToCell(position);
                 return playerCell + Vector3Int.right;
-            case InteractionDirection.Left:
+
+            case PlacementDirections.Left:
                 position = transform.position + Vector3.down * -0.5f;
                 playerCell = terrain.WorldToCell(position);
                 return playerCell + Vector3Int.left;
 
-            case InteractionDirection.Right:
+            case PlacementDirections.Right:
                 position = transform.position + Vector3.down * -0.5f;
                 playerCell =
             terrain.WorldToCell(position);
                 return playerCell + Vector3Int.right;
-
+            case PlacementDirections.Down:
+                position = transform.position + Vector3.down * 0.5f;
+                playerCell = terrain.WorldToCell(position);
+                return playerCell + Vector3Int.down;
         }
 
         position = transform.position + Vector3.down * 0.5f;

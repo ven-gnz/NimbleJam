@@ -7023,6 +7023,8 @@ MonoBehaviour:
     terrain: 1
   - tile: {fileID: 11400000, guid: d0bb0dfe8de1b984fa65806a94f5a319, type: 2}
     terrain: 0
+  emptyTile: {fileID: 11400000, guid: d0bb0dfe8de1b984fa65806a94f5a319, type: 2}
+  softTile: {fileID: 11400000, guid: df97a9b8e7a977c4bb40e5ee32430850, type: 2}
 --- !u!1 &2091256858
 GameObject:
   m_ObjectHideFlags: 0
@@ -7177,7 +7179,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   moveSpeed: 2.5
+  playerCollider: {fileID: 0}
   jumpImpulse: 5
+  terrain: {fileID: 0}
+  maxDirt: 3
 --- !u!50 &2091256863
 Rigidbody2D:
   serializedVersion: 5
