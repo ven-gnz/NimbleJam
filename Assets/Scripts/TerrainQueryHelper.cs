@@ -20,17 +20,14 @@ public class TerrainTileMapping
 
 public class TerrainQueryHelper : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    private static Vector2Int[] CardinalDirections =
+{
+        new Vector2Int(1, 0),
+        new Vector2Int(-1, 0),
+        new Vector2Int(0, 1),
+        new Vector2Int(0, -1)
+};
 
     public Vector3Int WorldToCell(Vector3 worldPosition)
     {
@@ -40,6 +37,8 @@ public class TerrainQueryHelper : MonoBehaviour
 
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private TerrainTileMapping[] terrainMappings;
+    [SerializeField] public Tile emptyTile;
+    [SerializeField] public Tile softTile;
 
     private readonly Dictionary<Vector3Int, GameObject> terrainColliders = new();
 
@@ -177,5 +176,68 @@ public class TerrainQueryHelper : MonoBehaviour
             );
         }
     }
+
+
+    public bool RemoveTerrain(Vector3Int cell)
+    {
+        TerrainType terrain = GetTerrain(cell);
+
+        if (terrain != TerrainType.Soft) return false;
+
+        int x = cell.x - bounds.xMin;
+        int y = cell.y - bounds.yMin;
+
+        terrainData[y * width + x] = (byte)TerrainType.Empty;
+
+        tilemap.SetTile(cell, emptyTile);
+
+        if(terrainColliders.TryGetValue(cell, out GameObject colliderObject))
+        {
+            Destroy(colliderObject);
+            terrainColliders.Remove(cell);
+            return true;
+        }
+
+        Debug.LogError("Cannot remove collider on object!");
+        return false;
+    }
+
+    public bool HasCardinalNeighbor(Vector3Int cell)
+    {
+       Vector3Int t;
+       foreach(Vector2Int v in CardinalDirections)
+        {
+            t = new Vector3Int(v.x + cell.x, v.y + cell.y, cell.z);
+            if (GetTerrain(t) == TerrainType.Soft || GetTerrain(t) == TerrainType.Rock)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool RequestTerrain(Vector3Int cell)
+    {
+
+        TerrainType terrain = GetTerrain(cell);
+
+        if (terrain != TerrainType.Empty) return false;
+
+        if(HasCardinalNeighbor(cell))
+        {
+            tilemap.SetTile(cell, softTile);
+            
+
+            int x = cell.x - bounds.xMin;
+            int y = cell.y - bounds.yMin;
+
+            terrainData[y * width + x] = (byte)TerrainType.Soft;
+            CreateTerrainCollider(cell);
+            return true;
+        }
+        return false;
+    }
+
+
 
 }
