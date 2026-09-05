@@ -60,7 +60,7 @@ public class PlayerController : MonoBehaviour
 
        
         // o for digging
-        if (Keyboard.current.oKey.isPressed)
+        if (Keyboard.current.oKey.wasPressedThisFrame)
         {
             if (isDigging) return;
 
@@ -68,29 +68,25 @@ public class PlayerController : MonoBehaviour
             var keyboard = Keyboard.current;
 
             // Diagonals
-            if (keyboard.sKey.wasPressedThisFrame && keyboard.aKey.isPressed ||
-                keyboard.aKey.wasPressedThisFrame && keyboard.sKey.isPressed)
-            {
-                TryDig(DigDirections.DownLeft);
-                return;
-            }
-
-            if (keyboard.sKey.wasPressedThisFrame && keyboard.dKey.isPressed ||
-                keyboard.dKey.wasPressedThisFrame && keyboard.sKey.isPressed)
+            if (keyboard.sKey.isPressed && keyboard.dKey.isPressed)
             {
                 TryDig(DigDirections.DownRight);
                 return;
             }
 
-            if (keyboard.wKey.wasPressedThisFrame && keyboard.aKey.isPressed ||
-                keyboard.aKey.wasPressedThisFrame && keyboard.wKey.isPressed)
+            if (keyboard.sKey.isPressed && keyboard.aKey.isPressed)
+            {
+                TryDig(DigDirections.DownLeft);
+                return;
+            }
+
+            if (keyboard.wKey.isPressed && keyboard.aKey.isPressed)
             {
                 TryDig(DigDirections.Topleft);
                 return;
             }
 
-            if (keyboard.wKey.wasPressedThisFrame && keyboard.dKey.isPressed ||
-                keyboard.dKey.wasPressedThisFrame && keyboard.wKey.isPressed)
+            if (keyboard.wKey.isPressed && keyboard.dKey.isPressed)
             {
                 TryDig(DigDirections.TopRight);
                 return;
