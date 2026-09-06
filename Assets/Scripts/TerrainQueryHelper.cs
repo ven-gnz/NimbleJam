@@ -197,7 +197,7 @@ public class TerrainQueryHelper : MonoBehaviour
 
         terrainData[y * width + x] = (byte)TerrainType.Empty;
 
-        tilemap.SetTile(cell, emptyTile);
+        tilemap.SetTile(cell, null);
 
         if(terrainColliders.TryGetValue(cell, out GameObject colliderObject))
         {
