@@ -404,7 +404,7 @@ public class PlayerController : MonoBehaviour
     
     private IEnumerator HandleDigDelay()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.33f);
         isDigging = false;
     }
 
