@@ -8,6 +8,16 @@ public class AudioManager : MonoBehaviour
         SFX, Music
     }
 
+    [SerializeField] AudioClip FootStepA;
+    [SerializeField] AudioClip FootStepB;
+    [SerializeField] AudioClip Jump;
+    [SerializeField] AudioClip Dig;
+    [SerializeField] AudioClip Place;
+
+    [SerializeField] AudioClip _music;
+
+    private bool useFootStepA = true;
+
     public static AudioManager Instance { get; private set; }
 
     private void Awake()
@@ -39,6 +49,7 @@ public class AudioManager : MonoBehaviour
     {
         _musicGroup = _mixer.FindMatchingGroups(MUSIC_GROUP_NAME)[0];
         _musicGroup = _mixer.FindMatchingGroups(SFX_GROUP_NAME)[0];
+        PlayAudio(_music, SoundType.Music, 1.0f, true);
     }
     void Start()
     {
@@ -75,6 +86,29 @@ public class AudioManager : MonoBehaviour
         {
             Destroy(audioSource.gameObject, clip.length);
         }
+    }
+
+    public void PlayJump()
+    {
+        PlayAudio(Jump, SoundType.SFX, 0.8f, false);
+    }
+
+    public void PlayDig()
+    {
+        PlayAudio(Dig, SoundType.SFX, 0.35f, false);
+    }
+
+    public void PlayPlace()
+    {
+        PlayAudio(Place, SoundType.SFX, 0.45f, false);
+    }
+
+    public void PlayFootStep()
+    {
+        AudioClip clip = useFootStepA ? FootStepA : FootStepB;
+        useFootStepA = !useFootStepA;
+
+        PlayAudio(clip, SoundType.SFX, 0.45f, false);
     }
 
     public void ChangeMasterVolume(float volume)

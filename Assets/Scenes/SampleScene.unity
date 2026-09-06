@@ -148,6 +148,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11e696016c9fbab46958181f593d7e14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  FootStepA: {fileID: 0}
+  FootStepB: {fileID: 0}
+  Jump: {fileID: 8300000, guid: f5c938bc34f944a4e872b54430dc884a, type: 3}
+  Dig: {fileID: 8300000, guid: 722c08972aed3d642a7b5cb65159ada2, type: 3}
+  Place: {fileID: 8300000, guid: 67915cafed24e584f8d59cf6687c5b92, type: 3}
+  _music: {fileID: 8300000, guid: c1b87b8ec037f39458e19a3075332faf, type: 3}
   _mixer: {fileID: 24100000, guid: 49237e1c865f69c4e86152252b69b86e, type: 2}
 --- !u!4 &10495708
 Transform:
