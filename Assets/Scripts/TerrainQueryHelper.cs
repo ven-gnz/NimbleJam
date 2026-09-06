@@ -45,8 +45,8 @@ public class TerrainQueryHelper : MonoBehaviour
 
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private TerrainTileMapping[] terrainMappings;
-    [SerializeField] public Tile emptyTile;
-    [SerializeField] public Tile softTile;
+    [SerializeField] public TileBase emptyTile;
+    [SerializeField] public TileBase softTile;
 
     private readonly Dictionary<Vector3Int, GameObject> terrainColliders = new();
 
@@ -197,7 +197,7 @@ public class TerrainQueryHelper : MonoBehaviour
 
         terrainData[y * width + x] = (byte)TerrainType.Empty;
 
-        tilemap.SetTile(cell, emptyTile);
+        tilemap.SetTile(cell, null);
 
         if(terrainColliders.TryGetValue(cell, out GameObject colliderObject))
         {

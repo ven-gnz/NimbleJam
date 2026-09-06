@@ -10,7 +10,7 @@ public class PlayerUI : MonoBehaviour
 
     public void UpdateDirtCount(int count)
     {
-        dirtCountText.text = $"Dirt: {count}";
+        dirtCountText.text = $"x {count}";
     }
 
 }

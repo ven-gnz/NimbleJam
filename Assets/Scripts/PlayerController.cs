@@ -31,13 +31,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
     private Rigidbody2D rb;
     [SerializeField] Collider2D playerCollider;
-
+    [SerializeField] private float footstepInterval = 0.4f;
+    private float footstepTimer;
     [SerializeField] float coyoteTime = 0.2f;
 
     [SerializeField] float jumpImpulse = 10f;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] public PlayerUI playerUI;
-
+    [SerializeField] SpriteRenderer _characterBody;
+    [SerializeField] Animator _animator;
+    Rigidbody2D _rb;
+    public bool shouldflip;
     [SerializeField] float jumpBufferTime = 0.1f;
 
     private float jumpCooldown = 0.33f;
@@ -189,13 +193,41 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity.y
         );
 
+        bool characterIsWalking = input > 0f || input < 0f;
+        _animator.SetBool("IsRunning", characterIsWalking);
+
+        if(input < 0f)
+        { shouldflip = true; }
+        else if(input > 0f)
+        { shouldflip = false; }
+        _characterBody.flipX = shouldflip;
+
+        
+
         if (isGrounded)
         {
             coyoteTimer = coyoteTime;
+
+            // Footsteps
+            if (characterIsWalking)
+            {
+                footstepTimer -= Time.deltaTime;
+                if (footstepTimer <= 0f)
+                {
+                    AudioManager.Instance.PlayFootStep();
+                    footstepTimer = footstepInterval;
+                }
+            }
+            else
+            {
+                footstepTimer = 0f;
+
+            }
         }
         else
         {
             coyoteTimer -= Time.deltaTime;
+            footstepTimer = 0f;
         }
 
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
@@ -221,6 +253,7 @@ public class PlayerController : MonoBehaviour
     {
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
         rb.AddForce(Vector2.up * jumpImpulse, ForceMode2D.Impulse);
+        AudioManager.Instance.PlayJump();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -307,12 +340,12 @@ public class PlayerController : MonoBehaviour
             carriedDirt++;
             playerUI.UpdateDirtCount(carriedDirt);
         }
-        
+
         //Debug.Log(
         //    success
         //        ? "Dig successful!"
         //        : "Dig failed.");
-
+        AudioManager.Instance.PlayDig();
         StartCoroutine(HandleDigDelay());
         
         //Debug.Log("End dig routine " + isDigging);
@@ -396,6 +429,7 @@ public class PlayerController : MonoBehaviour
         {
             --carriedDirt;
             playerUI.UpdateDirtCount(carriedDirt);
+            AudioManager.Instance.PlayPlace();
         }
         
 
