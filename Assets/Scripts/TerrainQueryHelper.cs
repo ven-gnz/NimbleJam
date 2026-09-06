@@ -33,13 +33,13 @@ public class TerrainQueryHelper : MonoBehaviour
     public Vector3Int WorldToCell(Vector3 worldPosition)
     {
 
-        Vector3Int GridCoordinate =
-            new Vector3Int(
-                Mathf.RoundToInt(worldPosition.x),
-                Mathf.RoundToInt(worldPosition.y),
-                Mathf.RoundToInt(worldPosition.z));
+        //Vector3Int GridCoordinate =
+        //    new Vector3Int(
+        //        Mathf.RoundToInt(worldPosition.x),
+        //        Mathf.RoundToInt(worldPosition.y),
+        //        Mathf.RoundToInt(worldPosition.z));
 
-        return tilemap.WorldToCell(GridCoordinate);
+        return tilemap.WorldToCell(worldPosition);
     }
 
 
