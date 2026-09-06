@@ -33,20 +33,20 @@ public class TerrainQueryHelper : MonoBehaviour
     public Vector3Int WorldToCell(Vector3 worldPosition)
     {
 
-        //Vector3Int GridCoordinate =
-        //    new Vector3Int(
-        //        Mathf.RoundToInt(worldPosition.x),
-        //        Mathf.RoundToInt(worldPosition.y),
-        //        Mathf.RoundToInt(worldPosition.z));
+        Vector3Int GridCoordinate =
+            new Vector3Int(
+                Mathf.RoundToInt(worldPosition.x),
+                Mathf.RoundToInt(worldPosition.y),
+                Mathf.RoundToInt(worldPosition.z));
 
-        return tilemap.WorldToCell(worldPosition);
+        return tilemap.WorldToCell(GridCoordinate);
     }
 
 
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private TerrainTileMapping[] terrainMappings;
-    [SerializeField] public Tile emptyTile;
-    [SerializeField] public Tile softTile;
+    [SerializeField] public TileBase emptyTile;
+    [SerializeField] public TileBase softTile;
 
     private readonly Dictionary<Vector3Int, GameObject> terrainColliders = new();
 
