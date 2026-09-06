@@ -37,7 +37,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float jumpImpulse = 10f;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] public PlayerUI playerUI;
-
+    [SerializeField] SpriteRenderer _characterBody;
+    [SerializeField] Animator _animator;
+    Rigidbody2D _rb;
+    public bool shouldflip;
     [SerializeField] float jumpBufferTime = 0.1f;
 
     private float jumpCooldown = 0.33f;
@@ -188,6 +191,15 @@ public class PlayerController : MonoBehaviour
             input * moveSpeed,
             rb.linearVelocity.y
         );
+
+        bool characterIsWalking = input > 0f;
+        _animator.SetBool("IsRunning", characterIsWalking);
+
+        if(input < 0f)
+        { shouldflip = true; }
+        else if(input > 0f)
+        { shouldflip = false; }
+        _characterBody.flipX = shouldflip;
 
         if (isGrounded)
         {

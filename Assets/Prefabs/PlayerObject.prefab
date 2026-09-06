@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6268749371090718450}
   - component: {fileID: 3215544356656509676}
   - component: {fileID: 7838010856026591596}
+  - component: {fileID: 2176381544283461676}
   m_Layer: 7
   m_Name: PlayerObject
   m_TagString: Untagged
@@ -74,7 +75,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.8, y: 0.8}
+    oldSize: {x: 0.56, y: 0.68}
     newSize: {x: 0.8, y: 0.8}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -131,7 +132,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 6790795261115163192, guid: 6c42e6fb35c379a49aa8246cf89334ec, type: 3}
+  m_Sprite: {fileID: -8394113603099261111, guid: 8ba693b04019b2347ace89f5de12edf3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -160,6 +161,10 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  playerUI: {fileID: 0}
+  _characterBody: {fileID: 8774573264919608090}
+  _animator: {fileID: 2176381544283461676}
+  jumpBufferTime: 1
   terrain: {fileID: 0}
   isDigging: 0
 --- !u!50 &3215544356656509676
@@ -202,3 +207,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTerrainDebug
   terrain: {fileID: 0}
+--- !u!95 &2176381544283461676
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6748827493038722747}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1db3e4aa37f52fd41a5aa37c293cb25b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
